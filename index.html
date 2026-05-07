@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slideshow</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: black;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #slideshow-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .story-img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            display: none;
+            user-select: none;
+            -webkit-user-drag: none;
+            position: absolute;
+        }
+
+        .story-img.active {
+            display: block;
+        }
+
+        #progress-bar {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            gap: 4px;
+            z-index: 100;
+        }
+
+        .progress-segment {
+            height: 2px;
+            background-color: rgba(255, 255, 255, 0.3);
+            flex: 1;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-inner {
+            height: 100%;
+            background-color: white;
+            width: 0%;
+        }
+
+        .progress-segment.viewed .progress-inner {
+            width: 100%;
+        }
+
+        .progress-segment.active .progress-inner {
+            width: 100%;
+        }
+
+        #nav-left, #nav-right {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 50%;
+            z-index: 10;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        #nav-left { left: 0; }
+        #nav-right { right: 0; }
+
+        /* Navigation Buttons */
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 25; /* High enough */
+            opacity: 0.2;
+            transition: opacity 0.3s, background 0.3s;
+            pointer-events: auto;
+        }
+
+        .nav-btn:hover {
+            opacity: 1;
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .nav-btn.left { left: 20px; }
+        .nav-btn.right { right: 20px; }
+        
+        .home-btn {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 101;
+            opacity: 0.2;
+            transition: opacity 0.3s, background 0.3s;
+        }
+
+        .home-btn:hover {
+            opacity: 1;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-btn svg, .home-btn svg {
+            width: 24px;
+            height: 24px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+    </style>
+</head>
+<body>
+    <div id="progress-bar"></div>
+    <div id="slideshow-container">
+        <button class="home-btn" id="btn-home" aria-label="Página Inicial">
+            <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+        </button>
+        <button class="nav-btn left" id="btn-prev" aria-label="Anterior">
+            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+        <button class="nav-btn right" id="btn-next" aria-label="Próximo">
+            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
+        <div id="nav-left"></div>
+        <div id="nav-right"></div>
+    </div>
+
+    <script>
+        const totalImages = 12;
+        let currentIndex = 0;
+
+        const container = document.getElementById('slideshow-container');
+        const progressBar = document.getElementById('progress-bar');
+
+        for (let i = 1; i <= totalImages; i++) {
+            // Progress Segment
+            const segment = document.createElement('div');
+            segment.className = 'progress-segment';
+            segment.id = `segment-${i-1}`;
+            const inner = document.createElement('div');
+            inner.className = 'progress-inner';
+            segment.appendChild(inner);
+            progressBar.appendChild(segment);
+
+            // Image Element
+            const img = document.createElement('img');
+            img.className = 'story-img';
+            img.id = `img-${i-1}`;
+            
+            const extensions = ['jpg', 'JPG', 'jpeg', 'png', 'webp'];
+            let extIndex = 0;
+
+            function tryNextExtension() {
+                if (extIndex < extensions.length) {
+                    img.src = `${i}.${extensions[extIndex]}`;
+                    extIndex++;
+                } else {
+                    // Final Fallback
+                    img.src = `https://picsum.photos/seed/insta${i}/1080/1920`;
+                    img.onerror = null;
+                }
+            }
+
+            img.onerror = tryNextExtension;
+            tryNextExtension();
+            
+            container.appendChild(img);
+        }
+
+        function updateSlideshow() {
+            for (let i = 0; i < totalImages; i++) {
+                const img = document.getElementById(`img-${i}`);
+                const segment = document.getElementById(`segment-${i}`);
+                const inner = segment.querySelector('.progress-inner');
+                
+                if (i === currentIndex) {
+                    img.classList.add('active');
+                    segment.classList.add('active');
+                    segment.classList.remove('viewed');
+                    inner.style.width = '100%';
+                } else if (i < currentIndex) {
+                    img.classList.remove('active');
+                    segment.classList.add('viewed');
+                    segment.classList.remove('active');
+                    inner.style.width = '100%';
+                } else {
+                    img.classList.remove('active');
+                    segment.classList.remove('viewed');
+                    segment.classList.remove('active');
+                    inner.style.width = '0%';
+                }
+            }
+        }
+
+        function next() {
+            if (currentIndex < totalImages - 1) {
+                currentIndex++;
+                updateSlideshow();
+            }
+        }
+
+        function prev() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                updateSlideshow();
+            }
+        }
+
+        document.getElementById('nav-left').addEventListener('click', (e) => {
+            e.stopPropagation();
+            prev();
+        });
+        document.getElementById('nav-right').addEventListener('click', (e) => {
+            e.stopPropagation();
+            next();
+        });
+
+        document.getElementById('btn-prev').addEventListener('click', (e) => {
+            e.stopPropagation();
+            prev();
+        });
+        document.getElementById('btn-next').addEventListener('click', (e) => {
+            e.stopPropagation();
+            next();
+        });
+
+        document.getElementById('btn-home').addEventListener('click', (e) => {
+            e.stopPropagation();
+            currentIndex = 0;
+            updateSlideshow();
+        });
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') next();
+            if (e.key === 'ArrowLeft') prev();
+        });
+
+        let touchStartX = 0;
+        window.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].clientX;
+        }, false);
+
+        window.addEventListener('touchend', (e) => {
+            const touchEndX = e.changedTouches[0].clientX;
+            const diff = touchStartX - touchEndX;
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) next();
+                else prev();
+            }
+        }, false);
+
+        updateSlideshow();
+    </script>
+</body>
+</html>
+
