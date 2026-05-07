@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Slideshow</title>
+    <title>Escola Bíblica</title>
+
     <style>
         * {
             margin: 0;
@@ -148,21 +149,42 @@
             stroke-linecap: round;
             stroke-linejoin: round;
         }
+
+        #error-message {
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            display: none;
+        }
     </style>
 </head>
+
 <body>
     <div id="progress-bar"></div>
+
     <div id="slideshow-container">
+        <div id="error-message">
+            Não foi possível carregar a imagem.
+        </div>
+
         <button class="home-btn" id="btn-home" aria-label="Página Inicial">
-            <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            <svg viewBox="0 0 24 24">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
         </button>
 
         <button class="nav-btn left" id="btn-prev" aria-label="Anterior">
-            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            <svg viewBox="0 0 24 24">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
         </button>
 
         <button class="nav-btn right" id="btn-next" aria-label="Próximo">
-            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            <svg viewBox="0 0 24 24">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
         </button>
 
         <div id="nav-left"></div>
@@ -175,6 +197,7 @@
 
         const container = document.getElementById('slideshow-container');
         const progressBar = document.getElementById('progress-bar');
+        const errorMessage = document.getElementById('error-message');
 
         for (let i = 1; i <= totalImages; i++) {
             const segment = document.createElement('div');
@@ -190,8 +213,16 @@
             const img = document.createElement('img');
             img.className = 'story-img';
             img.id = `img-${i - 1}`;
-            img.src = `img/${i}.jpg`;
+
+            // Caminho correto das suas imagens no GitHub Pages
+            img.src = `img/${i}.jpg?v=2`;
+
             img.alt = `Slide ${i}`;
+
+            img.onerror = function () {
+                console.error(`Erro ao carregar: img/${i}.jpg`);
+                errorMessage.style.display = 'block';
+            };
 
             container.appendChild(img);
         }
