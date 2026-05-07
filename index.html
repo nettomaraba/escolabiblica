@@ -68,10 +68,7 @@
             width: 0%;
         }
 
-        .progress-segment.viewed .progress-inner {
-            width: 100%;
-        }
-
+        .progress-segment.viewed .progress-inner,
         .progress-segment.active .progress-inner {
             width: 100%;
         }
@@ -89,7 +86,6 @@
         #nav-left { left: 0; }
         #nav-right { right: 0; }
 
-        /* Navigation Buttons */
         .nav-btn {
             position: absolute;
             top: 50%;
@@ -104,7 +100,7 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            z-index: 25; /* High enough */
+            z-index: 25;
             opacity: 0.2;
             transition: opacity 0.3s, background 0.3s;
             pointer-events: auto;
@@ -117,7 +113,7 @@
 
         .nav-btn.left { left: 20px; }
         .nav-btn.right { right: 20px; }
-        
+
         .home-btn {
             position: absolute;
             bottom: 30px;
@@ -160,12 +156,15 @@
         <button class="home-btn" id="btn-home" aria-label="Página Inicial">
             <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
         </button>
+
         <button class="nav-btn left" id="btn-prev" aria-label="Anterior">
             <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
         </button>
+
         <button class="nav-btn right" id="btn-next" aria-label="Próximo">
             <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
         </button>
+
         <div id="nav-left"></div>
         <div id="nav-right"></div>
     </div>
@@ -178,37 +177,22 @@
         const progressBar = document.getElementById('progress-bar');
 
         for (let i = 1; i <= totalImages; i++) {
-            // Progress Segment
             const segment = document.createElement('div');
             segment.className = 'progress-segment';
-            segment.id = `segment-${i-1}`;
+            segment.id = `segment-${i - 1}`;
+
             const inner = document.createElement('div');
             inner.className = 'progress-inner';
+
             segment.appendChild(inner);
             progressBar.appendChild(segment);
 
-            // Image Element
             const img = document.createElement('img');
             img.className = 'story-img';
-            img.id = `img-${i-1}`;
-            
-            const extensions = ['jpg', 'JPG', 'jpeg', 'png', 'webp'];
-            let extIndex = 0;
+            img.id = `img-${i - 1}`;
+            img.src = `img/${i}.jpg`;
+            img.alt = `Slide ${i}`;
 
-            function tryNextExtension() {
-                if (extIndex < extensions.length) {
-                    img.src = `${i}.${extensions[extIndex]}`;
-                    extIndex++;
-                } else {
-                    // Final Fallback
-                    img.src = `https://picsum.photos/seed/insta${i}/1080/1920`;
-                    img.onerror = null;
-                }
-            }
-
-            img.onerror = tryNextExtension;
-            tryNextExtension();
-            
             container.appendChild(img);
         }
 
@@ -217,7 +201,7 @@
                 const img = document.getElementById(`img-${i}`);
                 const segment = document.getElementById(`segment-${i}`);
                 const inner = segment.querySelector('.progress-inner');
-                
+
                 if (i === currentIndex) {
                     img.classList.add('active');
                     segment.classList.add('active');
@@ -255,6 +239,7 @@
             e.stopPropagation();
             prev();
         });
+
         document.getElementById('nav-right').addEventListener('click', (e) => {
             e.stopPropagation();
             next();
@@ -264,6 +249,7 @@
             e.stopPropagation();
             prev();
         });
+
         document.getElementById('btn-next').addEventListener('click', (e) => {
             e.stopPropagation();
             next();
@@ -281,6 +267,7 @@
         });
 
         let touchStartX = 0;
+
         window.addEventListener('touchstart', (e) => {
             touchStartX = e.changedTouches[0].clientX;
         }, false);
@@ -288,6 +275,7 @@
         window.addEventListener('touchend', (e) => {
             const touchEndX = e.changedTouches[0].clientX;
             const diff = touchStartX - touchEndX;
+
             if (Math.abs(diff) > 50) {
                 if (diff > 0) next();
                 else prev();
@@ -298,4 +286,3 @@
     </script>
 </body>
 </html>
-
