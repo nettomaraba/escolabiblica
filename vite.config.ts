@@ -1,12 +1,15 @@
-import { defineConfig } from 'vite';
+import { defineConfig } from "vite";
 
 export default defineConfig({
+  base: "/escolabiblica/",
+
   server: {
     port: 3000,
-    host: '0.0.0.0',
-    hmr: process.env.DISABLE_HMR !== 'true',
+    host: "0.0.0.0",
+    hmr: process.env.DISABLE_HMR !== "true",
   },
+
   build: {
-    outDir: 'dist',
+    outDir: "dist",
   },
 });
