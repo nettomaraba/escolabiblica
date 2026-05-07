@@ -1,19 +1,8 @@
 import { useState } from "react";
 
-const images = [
-  "/img/1.jpg",
-  "/img/2.jpg",
-  "/img/3.jpg",
-  "/img/4.jpg",
-  "/img/5.jpg",
-  "/img/6.jpg",
-  "/img/7.jpg",
-  "/img/8.jpg",
-  "/img/9.jpg",
-  "/img/10.jpg",
-  "/img/11.jpg",
-  "/img/12.jpg",
-];
+const images = Array.from({ length: 12 }, (_, index) => {
+  return `${import.meta.env.BASE_URL}public/img/${index + 1}.jpg`;
+});
 
 export default function App() {
   const [currentSlide, setCurrentSlide] = useState(0);
